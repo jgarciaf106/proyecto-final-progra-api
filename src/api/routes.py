@@ -102,20 +102,34 @@ def update_user(id):
     isAdmin = request.json.get("isadmin", None)
 
 
-    if user_name is None:
-        return jsonify({"msg": "Please provide a valid user name."}), 400
-    if name is None:
-        return jsonify({"msg": "Please enter a valid full name."}), 400
     if password is None:
-        return jsonify({"msg": "Please enter a valid password."}), 400
-    if isAdmin is None:
-        return jsonify({"msg": "Please enter a valid admin status."}), 400
+        if user_name is None:
+            return jsonify({"msg": "Please provide a valid user name."}), 400
+        if name is None:
+            return jsonify({"msg": "Please enter a valid full name."}), 400
+        if isAdmin is None:
+            return jsonify({"msg": "Please enter a valid admin status."}), 400
 
-    update_user = User.query.filter_by(username=id).first()
-    update_user.username = user_name
-    update_user.name = name
-    update_user.password = password
-    update_user.is_admin = isAdmin
+        update_user = User.query.filter_by(username=id).first()
+        update_user.username = user_name
+        update_user.name = name
+        update_user.is_admin = isAdmin
+        
+    else:
+        if user_name is None:
+            return jsonify({"msg": "Please provide a valid user name."}), 400
+        if name is None:
+            return jsonify({"msg": "Please enter a valid full name."}), 400
+        if password is None:
+            return jsonify({"msg": "Please enter a valid password."}), 400
+        if isAdmin is None:
+            return jsonify({"msg": "Please enter a valid admin status."}), 400
+
+        update_user = User.query.filter_by(username=id).first()
+        update_user.username = user_name
+        update_user.name = name
+        update_user.password = password
+        update_user.is_admin = isAdmin
 
     db.session.commit()
     return jsonify({"msg": "The user has being successfully updated."}), 200
