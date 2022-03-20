@@ -102,7 +102,7 @@ def update_user(id):
     isAdmin = request.json.get("isadmin", None)
 
 
-    if password is None:
+    if password == "":
         if user_name is None:
             return jsonify({"msg": "Please provide a valid user name."}), 400
         if name is None:
