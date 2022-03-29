@@ -226,6 +226,14 @@ def get_categories():
     
     return jsonify({"results": categories, "message": "inventory Categories"}), 200
 
+# get all products & categories
+@api.route('/getproductscategories', methods=['GET'])
+def get_productscategories():  
+    product_categories = Product.query.join(Category, Product.cat_code == Category.cat_code).all()
+    product_categories = list(map(lambda prd_cat : prd_cat.serialize(), product_categories))  
+    
+    return jsonify({"results": product_categories, "message": "inventory Product and Categories"}), 200
+
 # get all users
 @api.route('/getusers', methods=['GET'])
 def get_users():  
