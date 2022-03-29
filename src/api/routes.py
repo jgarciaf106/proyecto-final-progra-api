@@ -5,11 +5,10 @@ from flask import Flask, request, jsonify, url_for, Blueprint
 from api.models import db, User, Category, Product
 from api.utils import generate_sitemap, APIException
 
-api = Blueprint('api', __name__)
+api = Blueprint("api", __name__)
 
 
-
-@api.route('/hello', methods=['POST', 'GET'])
+@api.route("/hello", methods=["POST", "GET"])
 def handle_hello():
 
     response_body = {
@@ -18,8 +17,9 @@ def handle_hello():
 
     return jsonify(response_body), 200
 
+
 # create user
-@api.route("/createuser", methods=['POST'])
+@api.route("/createuser", methods=["POST"])
 def create_user():
 
     username = request.json.get("username", None)
@@ -35,7 +35,7 @@ def create_user():
         return jsonify({"msg": "Please provide a valid password."}), 400
     if not is_admin:
         return jsonify({"msg": "Please provide a valid admin status."}), 400
-    
+
     user = User.query.filter_by(username=username, password=password).first()
 
     if user:
@@ -51,14 +51,15 @@ def create_user():
         db.session.commit()
     return jsonify({"msg": "User account was successfully created."}), 200
 
+
 # create new product
 @api.route("/createproduct", methods=["POST"])
 def new_product():
     prod_code = request.json.get("prodcode", None)
-    prod_cat_code= request.json.get("productcatcode", None)
+    prod_cat_code = request.json.get("productcatcode", None)
     prod_description = request.json.get("description", None)
-    
-    if not prod_code :
+
+    if not prod_code:
         return jsonify({"msg": "Please enter a valid product code."}), 400
     if not prod_cat_code:
         return jsonify({"msg": "Please enter a valid product category code"}), 400
@@ -74,13 +75,14 @@ def new_product():
         db.session.commit()
         return jsonify({"msg": "The product has being successfully created."}), 200
 
+
 # create new category
 @api.route("/createcategory", methods=["POST"])
 def new_category():
     cat_code = request.json.get("catcode", None)
     cat_description = request.json.get("description", None)
-    
-    if not cat_code :
+
+    if not cat_code:
         return jsonify({"msg": "Please enter a valid category code."}), 400
     if not cat_description:
         return jsonify({"msg": "Please enter a valid category description."}), 400
@@ -92,7 +94,8 @@ def new_category():
         db.session.add(new_category)
         db.session.commit()
         return jsonify({"msg": "The Category has being successfully created."}), 200
-    
+
+
 # update user
 @api.route("/updateuser/<id>", methods=["PUT"])
 def update_user(id):
@@ -100,7 +103,6 @@ def update_user(id):
     name = request.json.get("name", None)
     password = request.json.get("password", None)
     isAdmin = request.json.get("isadmin", None)
-
 
     if password == "":
         if user_name is None:
@@ -114,7 +116,7 @@ def update_user(id):
         update_user.username = user_name
         update_user.name = name
         update_user.is_admin = isAdmin
-        
+
     else:
         if user_name is None:
             return jsonify({"msg": "Please provide a valid user name."}), 400
@@ -134,11 +136,12 @@ def update_user(id):
     db.session.commit()
     return jsonify({"msg": "The user has being successfully updated."}), 200
 
+
 # update product
 @api.route("/updateproduct/<id>", methods=["PUT"])
 def update_product(id):
     prod_code = request.json.get("prodcode", None)
-    prod_cat_code= request.json.get("productcatcode", None)
+    prod_cat_code = request.json.get("productcatcode", None)
     prod_description = request.json.get("description", None)
 
     if prod_code is None:
@@ -156,6 +159,7 @@ def update_product(id):
     db.session.commit()
     return jsonify({"msg": "The product has being successfully updated."}), 200
 
+
 # update category
 @api.route("/updatecategory/<id>", methods=["PUT"])
 def update_category(id):
@@ -170,15 +174,16 @@ def update_category(id):
     update_category = Category.query.filter_by(cat_code=id).first()
     update_category.cat_code = cat_code
     update_category.description = cat_description
-    
+
     db.session.commit()
     return jsonify({"msg": "The category has being successfully updated."}), 200
+
 
 # delete user
 @api.route("/deleteuser/<id>", methods=["DELETE"])
 def delete_user(id):
     del_user = User.query.filter_by(username=id).first()
-    
+
     if del_user is None:
         raise APIException("There is not user to delete", status_code=404)
 
@@ -186,11 +191,12 @@ def delete_user(id):
     db.session.commit()
     return jsonify({"msg": "The user has being successfully deleted."}), 200
 
+
 # delete product
 @api.route("/deleteproduct/<id>", methods=["DELETE"])
 def delete_product(id):
     del_product = Product.query.filter_by(prod_code=id).first()
-    
+
     if del_product is None:
         raise APIException("There is not product to delete", status_code=404)
 
@@ -198,11 +204,12 @@ def delete_product(id):
     db.session.commit()
     return jsonify({"msg": "The product has being successfully deleted."}), 200
 
+
 # delete category
 @api.route("/deletecategory/<id>", methods=["DELETE"])
 def delete_category(id):
     del_category = Category.query.filter_by(cat_code=id).first()
-    
+
     if del_category is None:
         raise APIException("There is not category to delete", status_code=404)
 
@@ -210,40 +217,64 @@ def delete_category(id):
     db.session.commit()
     return jsonify({"msg": "The category has being successfully deleted."}), 200
 
+
 # get all products
-@api.route('/getproducts', methods=['GET'])
-def get_products():  
+@api.route("/getproducts", methods=["GET"])
+def get_products():
     products = Product.query.all()
-    products = list(map(lambda prd : prd.serialize(), products))  
-    
+    products = list(map(lambda prd: prd.serialize(), products))
+
     return jsonify({"results": products, "message": "Inventory Products"}), 200
 
+
 # get all categories
-@api.route('/getcategories', methods=['GET'])
-def get_categories():  
+@api.route("/getcategories", methods=["GET"])
+def get_categories():
     categories = Category.query.all()
-    categories = list(map(lambda cat : cat.serialize(), categories))  
-    
+    categories = list(map(lambda cat: cat.serialize(), categories))
+
     return jsonify({"results": categories, "message": "inventory Categories"}), 200
 
+
 # get all products & categories
-@api.route('/getproductscategories', methods=['GET'])
-def get_productscategories():  
-    product_categories = Product.query.join(Category, Product.cat_code == Category.cat_code).all()
-    product_categories = list(map(lambda prd_cat : prd_cat.serialize(), product_categories))  
-    
-    return jsonify({"results": product_categories, "message": "inventory Product and Categories"}), 200
+@api.route("/getproductscategories", methods=["GET"])
+def get_productscategories():
+    product_categories = (
+        Product.query.join(Category, Product.cat_code == Category.cat_code)
+        .add_columns(
+            Product.prod_code,
+            Product.description.label("prod_description"),
+            Category.cat_code,
+            Category.description.label("cat_description"),
+        )
+        .all()
+    )
+    product_categories = list(
+        map(lambda prd_cat: prd_cat.serialize(), product_categories)
+    )
+
+    return (
+        jsonify(
+            {
+                "results": product_categories,
+                "message": "inventory Product and Categories",
+            }
+        ),
+        200,
+    )
+
 
 # get all users
-@api.route('/getusers', methods=['GET'])
-def get_users():  
+@api.route("/getusers", methods=["GET"])
+def get_users():
     users = User.query.all()
-    users = list(map(lambda usr : usr.serialize(), users))  
-    
+    users = list(map(lambda usr: usr.serialize(), users))
+
     return jsonify({"results": users, "message": "inventory users"}), 200
 
+
 # user log in
-@api.route('/userlogin', methods=['POST'])
+@api.route("/userlogin", methods=["POST"])
 def login_user():
     username = request.json.get("username", None)
     password = request.json.get("password", None)
@@ -254,10 +285,9 @@ def login_user():
     if not password:
         return jsonify({"msg": "Please provide a valid password."}), 400
 
-    
     user = User.query.filter_by(username=username, password=password).first()
 
     if user is None:
         return jsonify({"msg": "Invalid username or password"}), 401
     else:
-        return jsonify({"access": "Granted", "is_admin":user.is_admin}), 200
+        return jsonify({"access": "Granted", "is_admin": user.is_admin}), 200
