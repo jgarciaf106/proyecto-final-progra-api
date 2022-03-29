@@ -241,12 +241,12 @@ def get_categories():
 def get_productscategories():
     product_categories = (
         Product.query(
-            Product.id,
-            Product.cat_code,
-            Product.description.label("prod_desc"),
-            Category.description.label("cat_desc"),
+            Product.id, Product.cat_code, Product.description.label("prod_desc")
         )
-        .join(Category, Product.cat_code == Category.cat_code)
+        .join(
+            Category.query(Category.description.label("cat_desc")),
+            Product.cat_code == Category.cat_code,
+        )
         .all()
     )
     product_categories = list(
