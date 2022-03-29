@@ -239,13 +239,17 @@ def get_categories():
 # get all products & categories
 @api.route("/getproductscategories", methods=["GET"])
 def get_productscategories():
-    product_categories = Product.query(
-            Product.id, Product.cat_code, Product.description.label("prod_desc")
-        ).join(
-            Category.query(Category.description.label("cat_desc")),
-            Product.cat_code == Category.cat_code,
-        ).all()
-    
+    product_categories = (
+        db.session.query(
+            Product.prod_code,
+            Product.cat_code,
+            Product.description.label("prod_desc"),
+            Category.description.label("cat_desc"),
+        )
+        .join(Category, Product.cat_code == Category.cat_code)
+        .all()
+    )
+
     product_categories = list(
         map(lambda prd_cat: prd_cat.serialize(), product_categories)
     )
