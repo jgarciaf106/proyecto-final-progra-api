@@ -243,9 +243,9 @@ def get_productscategories():
         Product.query.join(Category, Product.cat_code == Category.cat_code)
         .add_columns(
             Product.prod_code,
-            Product.description.label("prod_description"),
+            Product.description,
             Category.cat_code,
-            Category.description.label("cat_description"),
+            Category.description,
         )
         .all()
     )
