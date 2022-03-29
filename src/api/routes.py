@@ -240,7 +240,13 @@ def get_categories():
 @api.route("/getproductscategories", methods=["GET"])
 def get_productscategories():
     product_categories = (
-        Product.query.join(Category, Product.cat_code == Category.cat_code)
+        Product.query(
+            Product.id,
+            Product.cat_code,
+            Product.description.label("prod_desc"),
+            Category.description.label("cat_desc"),
+        )
+        .join(Category, Product.cat_code == Category.cat_code)
         .all()
     )
     product_categories = list(
