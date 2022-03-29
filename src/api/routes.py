@@ -240,19 +240,20 @@ def get_categories():
 @api.route("/getproductscategories", methods=["GET"])
 def get_productscategories():
     product_categories = (
-        db.session.query(
-            Product.prod_code,
-            Product.cat_code,
-            Product.description.label("prod_desc"),
-            Category.description.label("cat_desc"),
-        )
+        db.session.query(Product, Category)
         .join(Category, Product.cat_code == Category.cat_code)
         .all()
     )
 
-    product_categories = list(
-        map(lambda prd_cat: prd_cat.serialize(), product_categories)
-    )
+    product_categories = [
+        {
+            "prod_code": pc[0].prod_code,
+            "cat_code": pc[0].cat_code,
+            "prod_desc": pc[0].description,
+            "cat_desc": pc[1].description,
+        }
+        for pc in product_categories
+    ]
 
     return (
         jsonify(
