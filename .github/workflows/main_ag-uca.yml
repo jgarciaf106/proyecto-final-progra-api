@@ -57,5 +57,5 @@ jobs:
         id: deploy-to-webapp
         with:
           app-name: 'ag-uca'
-          slot-name: 'Production'
+          slot-name: 'Development'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_11B13844BAFF4C968DBB637D2470C118 }}
